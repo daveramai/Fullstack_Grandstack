@@ -3,18 +3,27 @@ import BusinessResults from './BusinessResults';
 //Apollo client import statement
 import{ gql, useQuery } from '@apollo/client';
 
+//create fragment (for reuse) and inject into template literal below
+const BUSINESS_DETAILS_FRAGMENT = gql`
+    fragment BusinessDetails on Business {
+        businessId 
+        name
+        address
+        categories {
+            name
+        }
+    }
+`;
+
 //Construct GQL query
 const GET_BUSINESS_QUERY = gql`
+    ${BUSINESS_DETAILS_FRAGMENT}
+
     query BusinessesByCategory($selectedCategory: String!) {
         Business(
             filter: { categories_some: { name_contains: $selectedCategory } }
         ) {
-            businessId
-            name
-            address
-            categories {
-                name
-            }
+        ...BusinessDetails
         }
     }
 `;
@@ -26,7 +35,7 @@ function BusinessSearch() {
 const [selectedCategory, setSelectedCategory] = useState("");
 
 //using apollo client hook to run query with a variable
-const { loading, error, data} = useQuery(GET_BUSINESS_QUERY, { variables: { selectedCategory } });
+const { loading, error, data, refetch} = useQuery(GET_BUSINESS_QUERY, { variables: { selectedCategory } });
 
 if (error) return <p>Error encountered runnng gql query</p>;
 if (loading) return <p>Loading...</p>;
@@ -47,7 +56,7 @@ if (loading) return <p>Loading...</p>;
                         <option value="Beer">Beer</option>
                     </select>
                 </label>
-                <input type="submit" value="Submit"/>
+                <input type="submit" value="Refetch" onClick={() => refetch()}/> {/* GPL cache refetch used (versus polling) here*/}
             </form>
             <hr/>
             <BusinessResults businesses={ data.Business } />
