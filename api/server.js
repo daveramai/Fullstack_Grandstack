@@ -7,6 +7,7 @@ const neo4j = require('neo4j-driver'); //connect to local or cloud neo4j DB
 const { makeAugmentedSchema } = require('neo4j-graphql-js'); //schema augmentation and transpilation functionality
 const { typeDefs } = require('./typeDefs2.js'); //graphql type definitions
 
+
 //simulating a custom resolver used in the Business type
 const resolvers = {
     Business: {
@@ -22,7 +23,11 @@ const schema = makeAugmentedSchema({
     typeDefs,
     resolvers,
     config: {
-        mutation: true
+        mutation: true,
+        auth: {
+            isAuthenticated: true,
+            hasRole: true
+        }
     }
 });
 
@@ -32,10 +37,14 @@ const driver = neo4j.driver(
     neo4j.auth.basic("neo4j","secure$123")
 );
 
+//HTTP req injected to validate JWT token in auth header - need to add global variable on UNIX level: export JWT_SECRET=Dpwm9XXKqk809WXjCsOmRSZQ5i5fXw8N
 const server = new ApolloServer({
     schema,
-    context: { driver } //inject the driver instance into the context object
-})
+    context: ({req}) => {
+        return { req, driver }; //return an object with two objects inside it
+    }
+});
+
 
 server.listen().then(({url}) =>{
     console.log(`Graphql server ready at ${url}`)

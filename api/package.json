@@ -13,6 +13,7 @@
   "dependencies": {
     "apollo-server": "^2.25.1",
     "graphql": "^15.5.0",
+    "jsonwebtoken": "^8.5.1",
     "neo4j-driver": "^4.3.1",
     "neo4j-graphql-js": "^2.19.4"
   },

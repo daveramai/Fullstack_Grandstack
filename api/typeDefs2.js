@@ -2,7 +2,10 @@ const typeDefs = /* GraphQL */ `
     type Business {
         businessId: ID!
         waitTime: Int! @neo4j_ignore
-        avgStars: Float! @cypher(statement: "MATCH (this)<-[:REVIEWS]-(r:Review) RETURN avg(r.stars)")
+        avgStars: Float! @isAuthenticated
+            @cypher(
+                statement: "MATCH (this)<-[:REVIEWS]-(r:Review) RETURN avg(r.stars)"
+            )
         recommended(first: Int = 1): [Business] @cypher(statement: "MATCH (this)<-[:REVIEWS]-(:Review)<-[:WROTE]-(:User)-[:WROTE]->(:Review)-[:REVIEWS]->(rec:Business) WITH rec, COUNT(*) AS score RETURN rec ORDER BY score DESC LIMIT $first")
         name: String!
         city: String!
@@ -13,7 +16,12 @@ const typeDefs = /* GraphQL */ `
         categories: [Category] @relation(name: "IN_CATEGORY", direction: OUT)
     }
 
-    type User {
+    enum Role {
+        USER
+        ADMIN
+    }
+
+    type User @hasRole(roles: [ADMIN]) {
         userID: ID!
         name: String!
         reviews: [Review] @relation(name: "WROTE", direction: OUT)
