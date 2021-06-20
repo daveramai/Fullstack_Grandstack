@@ -22,7 +22,7 @@ const schema = makeAugmentedSchema({
     typeDefs,
     resolvers,
     config: {
-        mutation: false
+        mutation: true
     }
 });
 

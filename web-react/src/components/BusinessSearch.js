@@ -35,7 +35,10 @@ function BusinessSearch() {
 const [selectedCategory, setSelectedCategory] = useState("");
 
 //using apollo client hook to run query with a variable
-const { loading, error, data, refetch} = useQuery(GET_BUSINESS_QUERY, { variables: { selectedCategory } });
+const { loading, error, data, refetch} = useQuery(GET_BUSINESS_QUERY, { 
+    variables: { selectedCategory },
+    pollInterval: 0
+    });
 
 if (error) return <p>Error encountered runnng gql query</p>;
 if (loading) return <p>Loading...</p>;
