@@ -1,31 +1,35 @@
 import React, { useState } from 'react';
 import BusinessResults from './BusinessResults';
+//Apollo client import statement
+import{ gql, useQuery } from '@apollo/client';
 
-const businesses = [
-    {
-        businesId: "b1",
-        name: "San Mateo Public Library",
-        address: "55 W 3rd Ave",
-        category: "Library"
-    },
-    {
-        businessId: "b2",
-        name: "Ducky's Car Wash",
-        address: "716 N San Mateo Dr",
-        category: "Car Wash",
-    },
-    {
-        businessId: "b3",
-        name: "Hanabi",
-        address: "723 California Dr",
-        category: "Restaurant",
-    },
-];
+//Construct GQL query
+const GET_BUSINESS_QUERY = gql`
+    query BusinessesByCategory($selectedCategory: String!) {
+        Business(
+            filter: { categories_some: { name_contains: $selectedCategory } }
+        ) {
+            businessId
+            name
+            address
+            categories {
+                name
+            }
+        }
+    }
+`;
+
 
 function BusinessSearch() {
 
-    //using react hooks here
-const [selectedCategory, setSelectedCategory] = useState("All");
+//using react hooks here
+const [selectedCategory, setSelectedCategory] = useState("");
+
+//using apollo client hook to run query with a variable
+const { loading, error, data} = useQuery(GET_BUSINESS_QUERY, { variables: { selectedCategory } });
+
+if (error) return <p>Error encountered runnng gql query</p>;
+if (loading) return <p>Loading...</p>;
 
     return(
         <div>
@@ -36,20 +40,17 @@ const [selectedCategory, setSelectedCategory] = useState("All");
                     <select value={selectedCategory}
                     onChange ={ (event) => setSelectedCategory(event.target.value) }
                     >
-                        <option value="All">All</option>
+                        <option value="">All</option>
                         <option value="Library">Library</option>
                         <option value="Restaurant">Restaurant</option>
                         <option value="Car Wash">Car Wash</option>
+                        <option value="Beer">Beer</option>
                     </select>
                 </label>
                 <input type="submit" value="Submit"/>
             </form>
             <hr/>
-            <BusinessResults businesses={
-                selectedCategory === "All" 
-                ? businesses
-                : businesses.filter( (b)=> {return b.category === selectedCategory;})
-            } />
+            <BusinessResults businesses={ data.Business } />
         </div>
         
 

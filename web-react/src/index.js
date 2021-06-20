@@ -3,10 +3,21 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+//Apollo client
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+
+//Connect an instance of Apollo client to Neo4j DB
+const client = new ApolloClient({
+  uri: "http://localhost:4000",
+  cache: new InMemoryCache()
+});
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    { /* inject the Apollo client into the React component hierarchy */ }
+    <ApolloProvider client={ client }>
+      <App />
+    </ApolloProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );
