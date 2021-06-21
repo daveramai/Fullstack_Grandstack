@@ -1,6 +1,9 @@
 import React from 'react';
+import { useAuth0 } from "@auth0/auth0-react";
 
 function BusinessResults({businesses}) {
+    const { isAuthenticated } = useAuth0();
+
     return(
         <div>
             <h2>Results</h2>
@@ -10,6 +13,7 @@ function BusinessResults({businesses}) {
                         <th>Name</th>
                         <th>Address</th>
                         <th>Category</th>
+                        { isAuthenticated ? <th>Average Stars*</th> : null }
                     </tr>
                 </thead>
                 <tbody>
@@ -21,6 +25,7 @@ function BusinessResults({businesses}) {
                             (acc, c, i) => acc + (i === 0 ? " ": ", ") + c.name,
                             ""
                         )}</td>
+                        { isAuthenticated ? <td>{b.avgStars}</td> : null }
                     </tr>
                     ))}
                 </tbody>

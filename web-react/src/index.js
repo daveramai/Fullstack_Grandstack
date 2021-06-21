@@ -1,23 +1,24 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
-//Apollo client
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 
-//Connect an instance of Apollo client to Neo4j DB
-const client = new ApolloClient({
-  uri: "http://localhost:4000",
-  cache: new InMemoryCache()
-});
+//Auth0
+import { Auth0Provider } from '@auth0/auth0-react';
+//App with Apollo, Auto0 and Reach hooks
+import AppWithApollo from './components/AppWithApollo';
 
 ReactDOM.render(
   <React.StrictMode>
-    { /* inject the Apollo client into the React component hierarchy */ }
-    <ApolloProvider client={ client }>
-      <App />
-    </ApolloProvider>
+    {/* inject auth0 here */}
+      <Auth0Provider
+      domain="daveramai.us.auth0.com"
+      clientId="ZfVPhizcRgw9mVB6kkHLjzpph9ocSmsI"
+      redirectUri={window.location.origin}
+      audience="https://mybusinessreviews.com"
+      >
+        <AppWithApollo/>
+      </Auth0Provider>
   </React.StrictMode>,
   document.getElementById('root')
 );
